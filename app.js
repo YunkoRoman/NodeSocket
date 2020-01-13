@@ -1,22 +1,38 @@
-const app = require('express')();
+const express = require('express');
+const app = express();
 const http = require('http').Server(app);
+const path = require('path');
 const io = require('socket.io')(http);
+const cors = require('cors');
 
-const documents = {};
+const dataBase = require('./dataBase').getInstance();
+const {socketService} = require('./socketService');
+dataBase.setModels();
+app.use(cors());
+app.options('*', cors());
 
-io.on('connection', socket => {
-    let previousId;
-    const safeJoin = currentId => {
-        socket.leave(previousId);
-        socket.join(currentId, () => console.log(`Socket ${socket.id} joined room ${currentId}`));
-        previousId = currentId;
-    };
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.json());
+app.use(express.urlencoded({extended: true}));
 
+io.on('connection', async socket => {
+   await socketService.Socket(socket, io);
+});
 
+app.use((req, res, next) => {
+    const err = new Error('Page not found');
+    err.status = 404;
+    next(err)
+});
 
-    io.emit('documents', Object.keys(documents));
-
-    console.log(`Socket ${socket.id} has connected`);
+app.use((err, req, res, next) => {
+    res
+        .status(err.status || 500)
+        .json({
+            success: false,
+            message: err.message || 'Unknown Error',
+            controller: err.controller
+        })
 });
 
 http.listen(4444, () => {
