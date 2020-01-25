@@ -5,9 +5,6 @@ module.exports = (sequelize, DataTypes) => {
                 primaryKey: true,
                 autoIncrement: true
             },
-            orders: {
-                type: DataTypes.STRING
-            },
             restaurant_id: {
                 type: DataTypes.INTEGER,
                 foreignKey: true
@@ -23,6 +20,8 @@ module.exports = (sequelize, DataTypes) => {
             tableName: 'orders',
             timestamps: false
         });
+    const orderLine = sequelize.import('./orderLine');
+    orders.hasMany(orderLine, {foreignKey:'order_id'});
 
     return orders
 };
