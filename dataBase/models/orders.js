@@ -9,11 +9,15 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.INTEGER,
                 foreignKey: true
             },
-            status: {
-                type: DataTypes.STRING,
+            status_id: {
+                type: DataTypes.INTEGER,
+                foreignKey: true
             },
             date: {
                 type: DataTypes.STRING
+            },
+            total_price:{
+                type: DataTypes.INTEGER
             }
         },
         {
@@ -22,6 +26,9 @@ module.exports = (sequelize, DataTypes) => {
         });
     const orderLine = sequelize.import('./orderLine');
     orders.hasMany(orderLine, {foreignKey:'order_id'});
+
+    const orderStatus = sequelize.import('./order_status');
+    orders.belongsTo(orderStatus,{foreignKey: 'status_id'});
 
     return orders
 };

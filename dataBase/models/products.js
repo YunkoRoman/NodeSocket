@@ -27,8 +27,8 @@ module.exports = (sequelize, DataTypes) => {
             tableName: 'products',
             timestamps: false
         });
-    // const menu = sequelize.import('./menus.js');
-    // products.belongsTo(menu, {foreignKey: 'menu_id'});
+    const menu = sequelize.import('./menus.js');
+    products.belongsTo(menu, {foreignKey: 'menu_id'});
 
 
     return products
